@@ -34,7 +34,17 @@ def sigmoid_focal_loss(pred,
                        avg_factor=None):
     # Function.apply does not accept keyword arguments, so the decorator
     # "weighted_loss" is not applicable
-    loss = _sigmoid_focal_loss(pred, target, gamma, alpha)
+
+    # loss = _sigmoid_focal_loss(pred, target, gamma, alpha)
+    
+    pred_sigmoid = pred.sigmoid()
+    target = target.type_as(pred).reshape(-1, 1)
+    pt = (1 - pred_sigmoid) * target + pred_sigmoid * (1 - target)
+    focal_weight = (alpha * target + (1 - alpha) *
+                    (1 - target)) * pt.pow(gamma)
+    loss = F.binary_cross_entropy_with_logits(
+        pred, target, reduction='none') * focal_weight
+    
     # TODO: find a proper way to handle the shape of weight
     if weight is not None:
         weight = weight.view(-1, 1)

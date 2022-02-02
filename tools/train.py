@@ -2,6 +2,7 @@ from __future__ import division
 
 import argparse
 import os
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 from mmcv import Config
 
 from mmdet import __version__
@@ -36,6 +37,8 @@ def parse_args():
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
+    # args = parser.parse_args(["configs/elephant/cityperson/retinanet_ResNet50.py"])
+    args.validate = True
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
 
